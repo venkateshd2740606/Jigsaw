@@ -28,7 +28,7 @@ object TutorialLevels {
             difficulty = difficulty,
             gridSize = gridSize,
             initialTiles = tiles,
-            puzzleIndex = index + 1,
+            puzzleIndex = index % PuzzleImageCatalog.IMAGE_COUNT,
             isTutorial = true
         )
     }

@@ -1,16 +1,20 @@
 package com.jigsaw.presentation.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,44 +22,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jigsaw.R
 import com.jigsaw.domain.model.JigsawGame
 import com.jigsaw.engine.JigsawEngine
-
-private val tileColors = listOf(
-    Color(0xFFEF5350),
-    Color(0xFF42A5F5),
-    Color(0xFF66BB6A),
-    Color(0xFFFFA726),
-    Color(0xFFAB47BC),
-    Color(0xFF26A69A),
-    Color(0xFF5C6BC0),
-    Color(0xFFEC407A),
-    Color(0xFF8D6E63),
-    Color(0xFF78909C),
-    Color(0xFFFF7043),
-    Color(0xFF9CCC65),
-    Color(0xFF29B6F6),
-    Color(0xFFBA68C8),
-    Color(0xFFFFCA28),
-    Color(0xFF26C6DA),
-    Color(0xFF7E57C2),
-    Color(0xFFFF8A65),
-    Color(0xFF66BB6A),
-    Color(0xFF42A5F5),
-    Color(0xFFEF5350),
-    Color(0xFFFFB74D),
-    Color(0xFF4DB6AC),
-    Color(0xFFA1887F),
-    Color(0xFF90A4AE)
-)
+import com.jigsaw.engine.PuzzleImageCatalog
 
 @Composable
 fun JigsawBoard(
@@ -66,6 +43,9 @@ fun JigsawBoard(
 ) {
     val boardDescription = stringResource(R.string.color_sort)
     val size = game.level.gridSize
+    val puzzleIndex = game.level.puzzleIndex
+    val imageName = PuzzleImageCatalog.displayNameFor(puzzleIndex)
+    val imageRes = PuzzleImageCatalog.drawableFor(puzzleIndex)
 
     Column(
         modifier = modifier
@@ -78,6 +58,12 @@ fun JigsawBoard(
         Text(
             text = stringResource(R.string.sliding_puzzle_hint, size, size),
             style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = stringResource(R.string.photo_jigsaw_scene, imageName),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 12.dp)
         )
         Column(
@@ -99,6 +85,8 @@ fun JigsawBoard(
                         val canSlide = JigsawEngine.canSlide(game, index)
                         TileCell(
                             value = value,
+                            gridSize = size,
+                            imageRes = imageRes,
                             canSlide = canSlide,
                             modifier = Modifier
                                 .weight(1f)
@@ -122,6 +110,8 @@ fun JigsawBoard(
 @Composable
 private fun TileCell(
     value: Int,
+    gridSize: Int,
+    imageRes: Int,
     canSlide: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -130,9 +120,9 @@ private fun TileCell(
             .clip(RoundedCornerShape(8.dp))
             .background(
                 if (value == 0) {
-                    MaterialTheme.colorScheme.surface.copy(alpha = 0.15f)
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.35f)
                 } else {
-                    tileColors[(value - 1) % tileColors.size]
+                    MaterialTheme.colorScheme.surface
                 }
             )
             .border(
@@ -143,16 +133,25 @@ private fun TileCell(
                     MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                 },
                 shape = RoundedCornerShape(8.dp)
-            ),
-        contentAlignment = Alignment.Center
+            )
+            .graphicsLayer { clip = true },
+        contentAlignment = Alignment.TopStart
     ) {
         if (value != 0) {
-            Text(
-                text = value.toString(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            val solvedRow = (value - 1) / gridSize
+            val solvedCol = (value - 1) % gridSize
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val tileW = maxWidth
+                val tileH = maxHeight
+                Image(
+                    painter = painterResource(imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(tileW * gridSize, tileH * gridSize)
+                        .offset(x = -tileW * solvedCol, y = -tileH * solvedRow)
+                )
+            }
         }
     }
 }

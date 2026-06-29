@@ -33,7 +33,7 @@
     <string name="choose_difficulty">Choose Difficulty</string>
 
     <!-- Game -->
-    <string name="color_sort">Jigsaw</string>
+    <string name="color_sort">Photo Jigsaw</string>
     <string name="screw_puzzle">Jigsaw</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
@@ -210,7 +210,8 @@
     <!-- Accessibility -->
     <string name="cd_tube_selected">Selected tile</string>
     <string name="cd_tube">Puzzle tile</string>
-    <string name="sliding_puzzle_hint">%1$dx%2$d sliding picture puzzle — tap a tile beside the empty space</string>
+    <string name="sliding_puzzle_hint">%1$dx%2$d photo jigsaw — slide tiles to rebuild the picture</string>
+    <string name="photo_jigsaw_scene">Scene: %1$s</string>
 
     <!-- App themes -->
     <string name="theme_system">System</string>

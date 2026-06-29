@@ -21,7 +21,7 @@ object JigsawGenerator {
             difficulty = difficulty,
             gridSize = gridSize,
             initialTiles = tiles,
-            puzzleIndex = levelNumber,
+            puzzleIndex = (levelNumber - 1) % PuzzleImageCatalog.IMAGE_COUNT,
             isEndless = difficulty == Difficulty.ENDLESS
         )
     }
